@@ -23,16 +23,212 @@ Example:
 -->
 
 <dom-module id="ks2016-search">
+  
+  <style is="custom-style">
+
+    body {
+      margin: 0;
+      font-family: 'Roboto', 'Noto', sans-serif;
+      background-color: #eee;
+    }
+
+    app-header {
+      background-color: #0b8043;
+      color: white;
+
+      --app-header-front-background: {
+        background-color: #4285f4;
+      };
+    }
+
+    app-header paper-icon-button {
+      --paper-icon-button-ink-color: white;
+    }
+
+    iron-list {
+      background-color: var(--paper-grey-200, #eee);
+      padding-bottom: 16px;
+      @apply(--layout-flex);
+    }
+
+    .item {
+      @apply(--layout-horizontal);
+
+      margin: 16px 16px 0 16px;
+      padding: 20px;
+
+      border-radius: 8px;
+      background-color: white;
+      border: 1px solid #ddd;
+    }
+
+    .avatar {
+      height: 40px;
+      width: 40px;
+      border-radius: 20px;
+      box-sizing: border-box;
+      background-color: #DDD;
+    }
+
+    .pad {
+      padding: 0 16px;
+      @apply(--layout-flex);
+      @apply(--layout-vertical);
+    }
+
+    .primary {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .secondary {
+      font-size: 14px;
+    }
+
+    .dim {
+      color: gray;
+    }
+
+    .mainHeader [title] {
+      font-weight: 400;
+      margin: 0 0 0 50px;
+    }
+
+    .mainHeader [condensed-title] {
+      font-weight: 400;
+      margin-left: 30px;
+    }
+
+    .mainHeader [condensed-title] i {
+      font-style: normal;
+      font-weight: 100;
+    }
+
+    app-toolbar.tall {
+      height: 148px;
+    }
+  </style>
+
   <template>
-    <style>
-      :host {
-        display: block;
-        box-sizing: border-box;
-      }
 
-    </style>
+    <iron-ajax
+      id="postSearch"
+      url="{{docServerUrl}}"
+      method="POST"
+      handle-as="json"
+      last-response="{{ajaxResponse}}">
+    </iron-ajax>
 
-    <h1>&lt;ks2016-search&gt;</h1>
+    <paper-dialog modal id="searchDialog">
+      <h2>Header</h2>
+      <paper-dialog-scrollable>
+        
+
+        <div class="formcontainer" horizontal layout wrap>
+          <div class="formbox" vertical layout>
+            <span>
+              Keywords:&nbsp;&nbsp;
+            <input is="iron-input" id="keywords" placeholder="Type keywords">
+          </span><br>
+          
+          <span>
+              Board Number:&nbsp;&nbsp;
+            <input is="iron-input" id="boardnumber" placeholder="Type a board number">
+          </span><br>
+          <span>
+              Award Number:&nbsp;&nbsp;
+            <input is="iron-input" id="awardnumber" placeholder="Type an award number">
+          </span>
+        </div>
+        <div class="formbox" vertical layout>
+          <span>
+              Union:&nbsp;&nbsp;
+            <input is="iron-input" id="unions" placeholder="Type unions">
+          </span><br>
+          <span>
+              Carrier:&nbsp;&nbsp;
+            <input is="iron-input" id="carriers" placeholder="Type carriers">
+          </span><br>
+          <span>
+              Craft:&nbsp;&nbsp;
+            <input is="iron-input" id="crafts" placeholder="Type crafts">
+          </span>
+        </div>
+        <div class="formbox" vertical layout>
+          <div center horizontal layout >
+            <paper-checkbox id="awards"></paper-checkbox> 
+            &nbsp;&nbsp;
+            <h4>Awards</h4>
+          </div>
+          <div center horizontal layout>
+            <paper-checkbox id="decisions"></paper-checkbox> 
+            &nbsp;&nbsp;
+            <div><h4>Decisions</h4></div>
+          </div>
+          <div center horizontal layout>
+            <paper-checkbox id="pebs"></paper-checkbox> 
+            &nbsp;&nbsp;
+            <h4>P.E.Bs</h4>
+          </div>
+        </div>
+        <div class="formbox" vertical layout>
+          <div center horizontal layout>
+            <paper-checkbox id="contracts"></paper-checkbox> 
+            &nbsp;&nbsp;
+            <h4>Contracts</h4>
+          </div>
+          <div center horizontal layout>
+            <paper-checkbox id="others"></paper-checkbox>
+            &nbsp;&nbsp; 
+            <h4>Others</h4>
+          </div>
+          </div>   
+        </div>
+
+
+
+
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm on-tap="_doSearch">Search</paper-button>
+      </div>
+    </paper-dialog>
+
+    <app-drawer-layout>
+      <div drawer>
+        <app-toolbar class="navToolbar">App name</app-toolbar>
+      </div>
+      <app-header-layout main>
+        <app-header class="mainHeader" condenses fixed effects="resize-title blend-background waterfall">
+          <app-toolbar>
+            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+            <h4 condensed-title>Contacts <i>&mdash; Summary</i></h4>
+            <paper-icon-button icon="search" on-tap="_toggleSearch"></paper-icon-button>
+            <paper-icon-button icon="more-vert"></paper-icon-button>
+          </app-toolbar>
+          <app-toolbar class="tall">
+            <h1 title>Contacts</h1>
+          </app-toolbar>
+        </app-header>
+        <iron-list items="[[ajaxResponse.ksresults]]" as="item" scroller="window">
+          <template>
+            <div>
+              <div class="item">
+                <div class="pad">
+                  <div class="primary">[[item.link]]</div>
+                  <h4>hello</h4>
+                </div>
+                
+              </div>
+            </div>
+          </template>
+        </iron-list>
+
+
+
+      </app-header-layout>
+    </app-drawer-layout>
     
   </template>
 
@@ -41,14 +237,140 @@ Example:
       is: 'ks2016-search',
 
       properties: {
+
+        docServer: {
+          type: String,
+          value:""
+        },
+        docServerUrl: String,
+        offset: {
+          type: Number,
+          value: 0
+        },
+        currentPage: {
+          type: Number,
+          value: 0
+        },
+        limit: {
+          type: Number,
+          value: 100
+        }
         
       },
 
       // Element Lifecycle
 
-      
+      ready: function () {
+        this.docServerUrl = this.docServer + "/kssearch";
+      },
 
       // Element Behavior
+
+      _toggleSearch: function () {
+        this.$.searchDialog.toggle();
+      },
+
+      _doSearch: function() {
+        alert("hey");
+        this.currentPage = 0,
+        // this.results = [];
+        this.ksSearch();
+      },
+      prevPage: function() {
+        // alert("prev");
+        this.currentPage--;
+          if (this.currentPage < 0 ) {
+              this.currentPage = 0;
+              alert("You are in the first page");
+          }
+          this.ksSearch();
+      },
+      nextPage: function() {
+        // alert("next");
+        this.currentPage++;
+        if ((this.currentPage * this.limit) > this.ajaxResponse.num_of_matches) {
+            this.currentPage--;
+            alert("You have reached the end of the search results");
+        } else {
+          this.ksSearch();
+        }
+      },
+      ksSearch: function() {
+        // alert("in search");
+        var offset = this.currentPage * this.limit;
+        
+
+
+
+          // assemble the querystring
+          var querystring = "";
+
+          if (this.$.keywords.value != null & this.$.keywords.value != "") {
+            querystring = querystring + this.$.keywords.value;
+          }
+          if (this.$.unions.value != null & this.$.unions.value != "") {
+            querystring = querystring + " unions:" + this.$.unions.value;
+          }
+          if (this.$.carriers.value != null & this.$.carriers.value != "") {
+            querystring = querystring + " carriers:" + this.$.carriers.value;
+          }
+          if (this.$.crafts.value != null & this.$.crafts.value != "") {
+            querystring = querystring + " crafts:" + this.$.crafts.value;
+          }
+          if (this.$.boardnumber.value != null & this.$.boardnumber.value != "") {
+            querystring = querystring + " boardnumber:" + this.$.boardnumber.value;
+          }
+          if (this.$.awardnumber.value != null & this.$.awardnumber.value != "") {
+            querystring = querystring + " awardnumber:" + this.$.awardnumber.value;
+          }
+
+          if (this.$.awards.checked | 
+            this.$.decisions.checked |
+            this.$.pebs.checked |
+            this.$.contracts.checked |
+            this.$.others.checked) {
+              querystring = querystring + " doctype:(";
+              if (this.$.awards.checked) {
+                querystring = querystring + " award OR";
+              }
+              if (this.$.decisions.checked) {
+                querystring = querystring + " decision OR";
+              }
+              if (this.$.pebs.checked) {
+                querystring = querystring + " peb OR";
+              }
+              if (this.$.contracts.checked) {
+                querystring = querystring + " contract OR";
+              }
+              if (this.$.others.checked) {
+                querystring = querystring + " other OR";
+              }
+              querystring = querystring + " xxx )";
+          }
+
+          console.log("in the ksSearch " + querystring);
+
+        var paramStr = {
+          'queryString': querystring,
+          'offset': offset,
+          'limit':this.limit
+        };
+        this.$.postSearch.body = JSON.stringify(paramStr);
+        this.$.postSearch.generateRequest();
+      }//,
+      // handleResponse: function () {
+      //   //this.results = [{"doctype":"I dont care"}]; //this.ajaxResponse.results;
+      //   this.bucket = this.ajaxResponse.bucket;
+      //   this.results = this.ajaxResponse.ksresults;
+      //   //alert("what?");
+      //   this.msg = this.ajaxResponse.msg;
+      //   this.num_of_matches = this.ajaxResponse.num_of_matches;
+        
+      //   // this.$.toastSuccess.show();
+      // },
+      // handleError: function () {
+      //   // this.$.toastError.show();
+      // }
 
     });
   </script>
