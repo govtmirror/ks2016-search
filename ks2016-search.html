@@ -107,6 +107,11 @@ Example:
     app-toolbar.tall {
       height: 148px;
     }
+
+    paper-button {
+      margin:10px;
+    }
+
   </style>
 
   <template>
@@ -120,90 +125,26 @@ Example:
     </iron-ajax>
 
     <paper-dialog modal id="searchDialog">
-      <h2>Header</h2>
-      <paper-dialog-scrollable>
-        
-
-        <div class="formcontainer" horizontal layout wrap>
-          <div class="formbox" vertical layout>
-            <span>
-              Keywords:&nbsp;&nbsp;
-            <input is="iron-input" id="keywords" placeholder="Type keywords">
-          </span><br>
-          
-          <span>
-              Board Number:&nbsp;&nbsp;
-            <input is="iron-input" id="boardnumber" placeholder="Type a board number">
-          </span><br>
-          <span>
-              Award Number:&nbsp;&nbsp;
-            <input is="iron-input" id="awardnumber" placeholder="Type an award number">
-          </span>
-        </div>
-        <div class="formbox" vertical layout>
-          <span>
-              Union:&nbsp;&nbsp;
-            <input is="iron-input" id="unions" placeholder="Type unions">
-          </span><br>
-          <span>
-              Carrier:&nbsp;&nbsp;
-            <input is="iron-input" id="carriers" placeholder="Type carriers">
-          </span><br>
-          <span>
-              Craft:&nbsp;&nbsp;
-            <input is="iron-input" id="crafts" placeholder="Type crafts">
-          </span>
-        </div>
-        <div class="formbox" vertical layout>
-          <div center horizontal layout >
-            <paper-checkbox id="awards"></paper-checkbox> 
-            &nbsp;&nbsp;
-            <h4>Awards</h4>
-          </div>
-          <div center horizontal layout>
-            <paper-checkbox id="decisions"></paper-checkbox> 
-            &nbsp;&nbsp;
-            <div><h4>Decisions</h4></div>
-          </div>
-          <div center horizontal layout>
-            <paper-checkbox id="pebs"></paper-checkbox> 
-            &nbsp;&nbsp;
-            <h4>P.E.Bs</h4>
-          </div>
-        </div>
-        <div class="formbox" vertical layout>
-          <div center horizontal layout>
-            <paper-checkbox id="contracts"></paper-checkbox> 
-            &nbsp;&nbsp;
-            <h4>Contracts</h4>
-          </div>
-          <div center horizontal layout>
-            <paper-checkbox id="others"></paper-checkbox>
-            &nbsp;&nbsp; 
-            <h4>Others</h4>
-          </div>
-          </div>   
-        </div>
-
-
-
-
-      </paper-dialog-scrollable>
       <div class="buttons">
         <paper-button dialog-dismiss>Cancel</paper-button>
         <paper-button dialog-confirm on-tap="_doSearch">Search</paper-button>
       </div>
+      <paper-dialog-scrollable> 
+        <search-form
+            seach-str="{{_searchStr}}">
+        </search-form>
+      </paper-dialog-scrollable> 
     </paper-dialog>
 
     <app-drawer-layout>
       <div drawer>
-        <app-toolbar class="navToolbar">App name</app-toolbar>
+        <app-toolbar class="navToolbar">Knowledge Store 2016</app-toolbar>
       </div>
       <app-header-layout main>
         <app-header class="mainHeader" condenses fixed effects="resize-title blend-background waterfall">
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-            <h4 condensed-title>Contacts <i>&mdash; Summary</i></h4>
+            <h4 condensed-title>Search Results <i>&mdash; Summary</i></h4>
             <paper-icon-button icon="search" on-tap="_toggleSearch"></paper-icon-button>
             <paper-icon-button icon="more-vert"></paper-icon-button>
           </app-toolbar>
@@ -216,8 +157,7 @@ Example:
             <div>
               <div class="item">
                 <div class="pad">
-                  <div class="primary">[[item.link]]</div>
-                  <h4>hello</h4>
+                  <result-item item="{{item}}" bucket="[[ajaxResponse.bucket]]"></result-item>
                 </div>
                 
               </div>
@@ -254,6 +194,10 @@ Example:
         limit: {
           type: Number,
           value: 100
+        }, 
+        _searchStr: {
+          type: String,
+          value: ""
         }
         
       },
@@ -298,60 +242,8 @@ Example:
       ksSearch: function() {
         // alert("in search");
         var offset = this.currentPage * this.limit;
-        
-
-
-
-          // assemble the querystring
-          var querystring = "";
-
-          if (this.$.keywords.value != null & this.$.keywords.value != "") {
-            querystring = querystring + this.$.keywords.value;
-          }
-          if (this.$.unions.value != null & this.$.unions.value != "") {
-            querystring = querystring + " unions:" + this.$.unions.value;
-          }
-          if (this.$.carriers.value != null & this.$.carriers.value != "") {
-            querystring = querystring + " carriers:" + this.$.carriers.value;
-          }
-          if (this.$.crafts.value != null & this.$.crafts.value != "") {
-            querystring = querystring + " crafts:" + this.$.crafts.value;
-          }
-          if (this.$.boardnumber.value != null & this.$.boardnumber.value != "") {
-            querystring = querystring + " boardnumber:" + this.$.boardnumber.value;
-          }
-          if (this.$.awardnumber.value != null & this.$.awardnumber.value != "") {
-            querystring = querystring + " awardnumber:" + this.$.awardnumber.value;
-          }
-
-          if (this.$.awards.checked | 
-            this.$.decisions.checked |
-            this.$.pebs.checked |
-            this.$.contracts.checked |
-            this.$.others.checked) {
-              querystring = querystring + " doctype:(";
-              if (this.$.awards.checked) {
-                querystring = querystring + " award OR";
-              }
-              if (this.$.decisions.checked) {
-                querystring = querystring + " decision OR";
-              }
-              if (this.$.pebs.checked) {
-                querystring = querystring + " peb OR";
-              }
-              if (this.$.contracts.checked) {
-                querystring = querystring + " contract OR";
-              }
-              if (this.$.others.checked) {
-                querystring = querystring + " other OR";
-              }
-              querystring = querystring + " xxx )";
-          }
-
-          console.log("in the ksSearch " + querystring);
-
         var paramStr = {
-          'queryString': querystring,
+          'queryString': this._searchStr,
           'offset': offset,
           'limit':this.limit
         };

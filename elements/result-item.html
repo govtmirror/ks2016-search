@@ -1,0 +1,64 @@
+<!--
+@license
+Copyright (c) 2016 dean wagner wagner@nmb.gov. All rights reserved.
+-->
+
+<dom-module id="result-item">
+  
+  <template>
+  	doctype: {{item.doctype}}<br/>
+	Board: {{item.boardtype}}-{{item.boardnumber}}<br/>
+	Award Number: {{item.awardnumber}}<br/>
+	Arbitrator: {{item.arbitrator}}<br/>
+	Carriers: {{item.carriers}}<br/>
+	Unions: {{item.unions}}<br/>
+	Crafts: {{item.crafts}}<br/>
+	Date: {{item.docdate}}<br/>
+	Link: 
+	<a href="http://storage.googleapis.com/{{_parsedLink}}" 
+			target="_blank">File Link
+	</a>
+	text:<br/>
+
+	<p class="textsnippet">{{item.doctext}}</p>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'result-item',
+
+      properties: {
+
+      	item: {
+      		type: Object,
+      		value: function () {
+      			return {};
+      		},
+      		observer: '_parseIt'
+      	},
+      	bucket: {
+      		type: String,
+      		value: ""
+      	}
+
+      },
+
+      _parseIt: function () {
+      	try {
+      		var parseResult = this.item.link.split("/");
+			console.log(parseResult);
+		    var lastIndex = parseResult.length - 1;
+		    this._parsedLink = this.bucket + "/" + parseResult[lastIndex];
+		    console.log(this._parsedLink);
+      	} catch(err) {
+      		console.log("failed to parse" + err);
+      	}
+      	
+      }
+
+    });
+
+  </script>
+
+</dom-module>
