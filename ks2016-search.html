@@ -110,7 +110,30 @@ Example:
 
     paper-button {
       margin:10px;
+      padding:10px;
+      border-radius: 5px;
     }
+
+    paper-button.custom:hover {
+      background-color: var(--paper-indigo-100);
+    }
+
+    paper-button.indigo {
+      background-color: var(--paper-indigo-500);
+      color: white;
+      --paper-button-raised-keyboard-focus: {
+        background-color: var(--paper-pink-a200) !important;
+        color: white !important;
+      };
+    }
+    paper-button.green {
+      background-color: var(--paper-green-500);
+      color: white;
+    }
+    paper-button.green[active] {
+      background-color: var(--paper-red-500);
+    }
+
 
   </style>
 
@@ -121,20 +144,36 @@ Example:
       url="{{docServerUrl}}"
       method="POST"
       handle-as="json"
-      last-response="{{ajaxResponse}}">
+      last-response="{{ajaxResponse}}"
+      loading="{{ajaxLoading}}">
     </iron-ajax>
 
     <paper-dialog modal id="searchDialog">
       <div class="buttons">
-        <paper-button dialog-dismiss>Cancel</paper-button>
-        <paper-button dialog-confirm on-tap="_doSearch">Search</paper-button>
+        <paper-button 
+            dialog-dismiss
+            raised 
+            class="custom green">
+          Cancel
+        </paper-button>
+        <paper-button 
+            dialog-confirm 
+            on-tap="_doSearch"
+            raised 
+            class="custom green">
+          Search
+        </paper-button>
       </div>
       <paper-dialog-scrollable> 
-        <search-form
-            seach-str="{{_searchStr}}">
-        </search-form>
+        <search-form></search-form>
       </paper-dialog-scrollable> 
     </paper-dialog>
+
+    <paper-dialog id="progress">
+        <paper-progress indeterminate></paper-progress>
+    </paper-dialog>
+
+    <div id="spinner" hidden$="{{!ajaxLoading}}"><paper-progress value="10"></paper-progress></div>
 
     <app-drawer-layout>
       <div drawer>
@@ -149,9 +188,10 @@ Example:
             <paper-icon-button icon="more-vert"></paper-icon-button>
           </app-toolbar>
           <app-toolbar class="tall">
-            <h1 title>Contacts</h1>
+            <h1 title>Search Results</h1>
           </app-toolbar>
         </app-header>
+        
         <iron-list items="[[ajaxResponse.ksresults]]" as="item" scroller="window">
           <template>
             <div>
@@ -194,18 +234,36 @@ Example:
         limit: {
           type: Number,
           value: 100
-        }, 
-        _searchStr: {
+        },
+        queryStr: {
           type: String,
           value: ""
+        },
+        ajaxLoading: {
+          type: Boolean,
+          value: false,
+          observer: '_spinnerChange'
         }
         
+      },
+
+      _spinnerChange: function () {
+        if (this.ajaxLoading) {
+          this.$.progress.open();
+        } else {
+          this.$.progress.close();
+        }
       },
 
       // Element Lifecycle
 
       ready: function () {
+        this.$.progress.close();
         this.docServerUrl = this.docServer + "/kssearch";
+        this.addEventListener('new-search', function (e) {
+          console.log(e);
+          this.queryStr = e.detail.querystring;
+        });
       },
 
       // Element Behavior
@@ -215,9 +273,7 @@ Example:
       },
 
       _doSearch: function() {
-        alert("hey");
         this.currentPage = 0,
-        // this.results = [];
         this.ksSearch();
       },
       prevPage: function() {
@@ -240,16 +296,15 @@ Example:
         }
       },
       ksSearch: function() {
-        // alert("in search");
         var offset = this.currentPage * this.limit;
         var paramStr = {
-          'queryString': this._searchStr,
+          'queryString': this.queryStr,
           'offset': offset,
           'limit':this.limit
         };
         this.$.postSearch.body = JSON.stringify(paramStr);
         this.$.postSearch.generateRequest();
-      }//,
+      }
       // handleResponse: function () {
       //   //this.results = [{"doctype":"I dont care"}]; //this.ajaxResponse.results;
       //   this.bucket = this.ajaxResponse.bucket;

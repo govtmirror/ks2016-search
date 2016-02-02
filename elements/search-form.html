@@ -4,18 +4,18 @@ Copyright (c) 2016 dean wagner wagner@nmb.gov. All rights reserved.
 -->
 
 <dom-module id="search-form">
-  
+
   <template>
 
 
     <span>Search => {{searchStr}}</span>
      
-    <paper-input id="keywords" label="Keywords" on-change="_makeSearchStr" size="40"></paper-input>
-    <paper-input id="boardnumber" label="Board Number" on-change="_makeSearchStr"></paper-input>
-    <paper-input id="awardnumber" label="Award Number" on-change="_makeSearchStr"></paper-input>
-    <paper-input id="unions" label="union" on-change="_makeSearchStr"></paper-input>
-    <paper-input id="carriers" label="carrier" on-change="_makeSearchStr"></paper-input>
-    <paper-input id="crafts" label="craft" on-change="_makeSearchStr"></paper-input>
+    <paper-input id="keywords" label="Keywords" on-input="_makeSearchStr" size="40"></paper-input>
+    <paper-input id="boardnumber" label="Board Number" on-input="_makeSearchStr"></paper-input>
+    <paper-input id="awardnumber" label="Award Number" on-input="_makeSearchStr"></paper-input>
+    <paper-input id="unions" label="union" on-input="_makeSearchStr"></paper-input>
+    <paper-input id="carriers" label="carrier" on-input="_makeSearchStr"></paper-input>
+    <paper-input id="crafts" label="craft" on-input="_makeSearchStr"></paper-input>
     Restrict Search to only:<br>
     <paper-checkbox id="awards" on-change="_makeSearchStr">Awards</paper-checkbox><br>
     <paper-checkbox id="decisions" on-change="_makeSearchStr">Decisions</paper-checkbox><br>
@@ -30,13 +30,7 @@ Copyright (c) 2016 dean wagner wagner@nmb.gov. All rights reserved.
       is: 'search-form',
 
       properties: {
-
-        searchStr: {
-          type: String,
-          value: "search",
-          notify: true
-        }
-
+        searchStr: String
       },
 
       _makeSearchStr: function () {
@@ -84,7 +78,11 @@ Copyright (c) 2016 dean wagner wagner@nmb.gov. All rights reserved.
             }
             querystring = querystring + " xxx )";
         }
+
         this.searchStr = querystring;
+        
+        this.fire('new-search', { querystring:querystring });
+        
       }
 
     });
