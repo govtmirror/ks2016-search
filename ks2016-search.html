@@ -197,10 +197,10 @@ Example:
             </paper-icon-button>
           </app-toolbar>
           <app-toolbar class="tall">
-            <h1 title>Search Results</h1>
+            <h1 title>Search Results {{_pageNum(currentPage)}}</h1>
           </app-toolbar>
         </app-header>
-        
+
         <iron-list items="[[ajaxResponse.ksresults]]" as="item" scroller="window">
           <template>
             <div>
@@ -237,8 +237,8 @@ Example:
           value: 0
         },
         currentPage: {
-          type: Number,
-          value: 0
+          type: Number//,
+          // value: 0
         },
         limit: {
           type: Number,
@@ -296,6 +296,15 @@ Example:
         } else {
           return true;
         }
+      },
+      _pageNum: function (page) {
+        console.log("XXX " + page);
+        if (page != NaN) {
+          return "page " + (page + 1);
+        } else {
+          return "";
+        }
+        
       },
 
       _doSearch: function() {
