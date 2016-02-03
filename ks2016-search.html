@@ -183,9 +183,18 @@ Example:
         <app-header class="mainHeader" condenses fixed effects="resize-title blend-background waterfall">
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-            <h4 condensed-title>Search Results <i>&mdash; Summary</i></h4>
+            <h4 condensed-title>Search Results</h4>
             <paper-icon-button icon="search" on-tap="_toggleSearch"></paper-icon-button>
-            <paper-icon-button icon="more-vert"></paper-icon-button>
+            <paper-icon-button 
+                icon="arrow-back" 
+                hidden$="{{_hasBack(ajaxResponse.num_of_matches)}}"
+                on-tap="prevPage">
+            </paper-icon-button>
+            <paper-icon-button 
+                icon="arrow-forward" 
+                hidden$="{{_hasForward(ajaxResponse.num_of_matches)}}"
+                on-tap="nextPage">
+            </paper-icon-button>
           </app-toolbar>
           <app-toolbar class="tall">
             <h1 title>Search Results</h1>
@@ -270,6 +279,23 @@ Example:
 
       _toggleSearch: function () {
         this.$.searchDialog.toggle();
+      },
+
+      _hasBack: function(numStr) {
+        var numMatch = parseInt(numStr);
+        if (this.currentPage > 0 && numMatch > 0) {
+          return false;
+        } else {
+          return true;
+        }
+      },
+      _hasForward: function(numStr) {
+        var numMatch = parseInt(numStr);
+        if (numMatch > ((this.currentPage + 1) * this.limit)) {
+          return false;
+        } else {
+          return true;
+        }
       },
 
       _doSearch: function() {
