@@ -27,7 +27,8 @@
     "iron-input": "PolymerElements/iron-input#^1.0.0",
     "paper-checkbox": "PolymerElements/paper-checkbox#^1.0.0",
     "paper-input": "PolymerElements/paper-input#^1.0.0",
-    "paper-progress": "PolymerElements/paper-progress#^1.0.0"
+    "paper-progress": "PolymerElements/paper-progress#^1.0.0",
+    "firebase-element": "GoogleWebComponents/firebase-element#^1.0.0"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",

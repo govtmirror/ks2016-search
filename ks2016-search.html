@@ -26,7 +26,9 @@ Example:
   
   <style is="custom-style">
 
-    body {
+    :host {
+      display: block;
+      box-sizing: border-box;
       margin: 0;
       font-family: 'Roboto', 'Noto', sans-serif;
       background-color: #eee;
@@ -133,6 +135,10 @@ Example:
     paper-button.green[active] {
       background-color: var(--paper-red-500);
     }
+    .menubox {
+      margin:15px;
+      background-color: #ddd;
+    }
 
 
   </style>
@@ -178,12 +184,47 @@ Example:
     <app-drawer-layout>
       <div drawer>
         <app-toolbar class="navToolbar">Knowledge Store 2016</app-toolbar>
+        <hr>
+        <div class="menubox">
+          <paper-icon-button 
+              icon="face" 
+              on-tap="_tapLogin">
+          </paper-icon-button>
+          <span>Login</span>
+          <br>
+          <paper-icon-button 
+              icon="home" 
+              on-tap="_tapHome">
+          </paper-icon-button>
+          <span>Home</span>
+          <br>
+          <paper-icon-button 
+              icon="search" 
+              on-tap="_tapSearch">
+          </paper-icon-button>
+          <span>Saved Search</span>
+          <br>
+          <paper-icon-button 
+              icon="bookmark" 
+              on-tap="_tapBookmark">
+          </paper-icon-button>
+          <span>Bookmarks</span>
+          <br>
+          <paper-icon-button 
+              icon="help" 
+              on-tap="_tapHelp">
+          </paper-icon-button>
+          <span>Help</span>
+          <br>
+        </div>
+
+
       </div>
       <app-header-layout main>
         <app-header class="mainHeader" condenses fixed effects="resize-title blend-background waterfall">
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-            <h4 condensed-title>Search Results</h4>
+            <h4 condensed-title>Results {{_pageNum(currentPage)}}</h4>
             <paper-icon-button icon="search" on-tap="_toggleSearch"></paper-icon-button>
             <paper-icon-button 
                 icon="arrow-back" 
@@ -197,7 +238,7 @@ Example:
             </paper-icon-button>
           </app-toolbar>
           <app-toolbar class="tall">
-            <h1 title>Search Results {{_pageNum(currentPage)}}</h1>
+            <h1 title>Results {{_pageNum(currentPage)}}</h1>
           </app-toolbar>
         </app-header>
 
@@ -280,6 +321,10 @@ Example:
       _toggleSearch: function () {
         this.$.searchDialog.toggle();
       },
+      _doSearch: function() {
+        this.currentPage = 0,
+        this.ksSearch();
+      },
 
       _hasBack: function(numStr) {
         var numMatch = parseInt(numStr);
@@ -304,12 +349,6 @@ Example:
         } else {
           return "";
         }
-        
-      },
-
-      _doSearch: function() {
-        this.currentPage = 0,
-        this.ksSearch();
       },
       prevPage: function() {
         // alert("prev");
@@ -330,6 +369,23 @@ Example:
           this.ksSearch();
         }
       },
+
+      _tapLogin: function () {
+        alert("_tapLogin");
+      },
+      _tapHome: function () {
+        alert("_tapHome");
+      },
+      _tapSearch: function () {
+        alert("_tapSearch");
+      },
+      _tapBookmark: function () {
+        alert("_tapBookmark");
+      },
+       _tapHelp: function () {
+        alert("_tapHelp");
+      },
+
       ksSearch: function() {
         var offset = this.currentPage * this.limit;
         var paramStr = {
